@@ -34,7 +34,7 @@ export const removeFromCart = (product) => {
   };
 };
 
-export const loaded = (products) => {
+export const loaded_product = (products) => {
   return {
     type: PRODUCT_LOADED,
     payload: products,
