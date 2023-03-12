@@ -1,9 +1,12 @@
 import {
   ADD_PRODUCT,
   ADD_TO_CART,
+  LOADED_A_PRODUCT,
   PRODUCT_LOADED,
   REMOVE_FROM_CART,
   REMOVE_PRODUCT,
+  SEARCHING,
+  UPDATE_PRODUCT,
 } from "../actionTypes/actionTypes";
 
 const initialState = {
@@ -22,6 +25,7 @@ const productReducer = (state = initialState, action) => {
         ...state,
         products: [...state.products, action.payload],
       };
+
     case REMOVE_PRODUCT:
       return {
         ...state,
@@ -29,6 +33,7 @@ const productReducer = (state = initialState, action) => {
           (product) => product._id !== action.payload
         ),
       };
+
     case ADD_TO_CART:
       if (selectedProduct) {
         const newCart = state.cart.filter(
@@ -46,6 +51,7 @@ const productReducer = (state = initialState, action) => {
         ...state,
         cart: [...state.cart, { ...action.payload, quantity: 1 }],
       };
+
     case REMOVE_FROM_CART:
       if (selectedProduct.quantity > 1) {
         const newCart = state.cart.filter(
@@ -70,6 +76,17 @@ const productReducer = (state = initialState, action) => {
         ...state,
         products: action.payload,
       };
+
+    case LOADED_A_PRODUCT:
+      return {
+        ...state,
+        products: state.products.filter(
+          (product) => product._id === action.payload._id
+        ),
+      };
+      
+    
+
     default:
       return state;
   }

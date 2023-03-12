@@ -1,23 +1,23 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { createLogger } from "redux-logger";
 import ProductCard from "../../components/ProductCard";
 import { toggleBrand, toggleStock } from "../../redux/actions/filterAction";
 import load_products_data from "../../redux/thunk/products/fetchProduct";
 
 const Home = () => {
- 
   // const state = useSelector((state)=>state)
   // console.log(state); // {product: {…}, product_filter: {…}}
 
-  const filters = useSelector((state)=>state.product_filter.filters);
-  const{brands, stock} = filters;
-  const products = useSelector((state)=>state.product.products);
-
-
+  const { filters, kewards } = useSelector((state) => state.product_filter);
+  const { brands, stock } = filters;
+  const products = useSelector((state) => state.product.products);
+  // console.log(products)
 
   useEffect(() => {
-    dispatch(load_products_data())
+    dispatch(load_products_data());
   }, []);
+  console.log(kewards);
 
   const activeClass = "text-white  bg-indigo-500 border-white";
 
@@ -30,24 +30,33 @@ const Home = () => {
     ));
   }
 
-  if (products.length && (brands.length ||  stock)) {
+  if (kewards.length) {
+    const search_kw = kewards.toLowerCase();
     content = products
       .filter((product) => {
-        if(stock){
-          return product.status === true
-        }
-        return product
-        
-      })
-      .filter((product) => {
-        if(brands.length){
-          return brands.includes(product.brand)
-        }
-        return product
+        return search_kw === ""
+          ? product
+          : product.model.toLowerCase().includes(search_kw);
       })
       .map((product) => <ProductCard key={product.model} product={product} />);
   }
 
+  if (products.length && (brands.length || stock)) {
+    content = products
+      .filter((product) => {
+        if (stock) {
+          return product.status === true;
+        }
+        return product;
+      })
+      .filter((product) => {
+        if (brands.length) {
+          return brands.includes(product.brand);
+        }
+        return product;
+      })
+      .map((product) => <ProductCard key={product.model} product={product} />);
+  }
 
   return (
     <div className="max-w-7xl gap-14 mx-auto my-10">
@@ -55,7 +64,7 @@ const Home = () => {
         <button
           onClick={() => dispatch(toggleStock())}
           className={`border px-3 py-2 rounded-full font-semibold ${
-            stock ? activeClass:null
+            stock ? activeClass : null
           } `}
         >
           In Stock
